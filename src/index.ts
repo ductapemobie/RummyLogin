@@ -87,7 +87,6 @@ app.patch('/users/delete', async (req, res) =>{
 
 app.patch('/users/token', async (req, res) => {
     const token:any = req.headers.jwt;
-    let accountId:Number = 0;
     try{
         const result:any = jwt.verify(token, SECRET_KEY);
         res.status(200)
