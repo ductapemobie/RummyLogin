@@ -1,17 +1,103 @@
 import express, { json } from 'express';
 import cors from 'cors';
+import { Account } from './entities';
+import AccountLogic from './business-logic/account-logic';
+import AccountLogicImpl from './business-logic/account-logic-impl';
+import jwt from 'jsonwebtoken'
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
+const SECRET_KEY = process.env.SECRET_KEY || 'placeholder-secret'
+const accountLogic:AccountLogic = new AccountLogicImpl();
 
-//creating a new user
-app.post('/users', (req, res)=>{});
+app.post('/users', async (req, res)=>{
+    const body  = req.body;
+    const username = body.username;
+    const password = body.password;
+    try{
+        let account = new Account(0, username , password);
+        account = await accountLogic.createAccount(account);
+        res.status(201)
+        res.send()
+    }catch(error){
+        res.status(403)
+        res.send(error.message)
+    }
+});
 
-//verifiying a new user
-app.get('users/verify', (req, res)=>{});
+app.patch('/users/login', async (req, res) =>{
+    const body  = req.body;
+    const username = body.username;
+    const password = body.password;
+    try{
+        let result = await accountLogic.validateLogin(username, password);
+        const token = jwt.sign({accountId:result}, SECRET_KEY)
+        res.status(200);
+        res.send(token)
+    }
+    catch(error){
+        res.status(403)
+        res.send(error.message);
+    }
+});
 
-//logging in
-app.patch('users/login', (req, res) =>{});
+app.patch('/users/updatepassword', async (req, res) => {
+    const token:any = req.headers.jwt;
+    let accountId:Number = 0;
+    const password:String = req.body.password
+    try{
+        const result:any = jwt.verify(token, SECRET_KEY);
+        accountId = result.accountId;
+    }catch(error){
+        res.status(401);
+        res.send(error.message)
+    }
+    try{
+        const updatedAccount = await accountLogic.updatePassword(accountId, password);
+        res.status(200);
+        res.send("Password updated successfully")
+    }catch(error){
+        res.status(403);
+        res.send(error.message);
+    }
+})
+
+app.patch('/users/delete', async (req, res) =>{
+    const token:any = req.headers.jwt;
+    let accountId:Number = 0;
+    try{
+        const result:any = jwt.verify(token, SECRET_KEY);
+        accountId = result.accountId;
+    }catch(error){
+        res.status(401);
+        res.send(error.message)
+    }
+    try{
+        const deleted:Boolean = await accountLogic.deleteAccount(accountId);
+        res.status(200)
+        res.send(`Account ${accountId} deleted successfully`);
+    }catch(error){
+        res.status(403);
+        res.send(error.message)
+    }
+});
+
+app.patch('/users/token', async (req, res) => {
+    const token:any = req.headers.jwt;
+    let accountId:Number = 0;
+    try{
+        const result:any = jwt.verify(token, SECRET_KEY);
+        res.status(200)
+        res.send(result.accountId);
+    }catch(error){
+        res.status(401);
+        res.send(error.message)
+    }
+})
+
+app.listen(PORT, ()=>{
+    console.log(`Listening on port ${PORT}`)
+})
