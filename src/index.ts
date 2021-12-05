@@ -89,13 +89,19 @@ app.patch('/users/token', async (req, res) => {
     const token:any = req.headers.jwt;
     try{
         const result:any = jwt.verify(token, SECRET_KEY);
+        const accountId:Number = result.accountId;
+        const userAccount = await accountLogic.getAccountById(accountId);
+        const retAccount = {
+            accountId:userAccount.accountId,
+            username:userAccount.username
+        };//dont want to send password to front end
         res.status(200)
-        res.send(result.accountId);
+        res.send(retAccount);
     }catch(error){
         res.status(401);
         res.send(error.message)
     }
-})
+});
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
