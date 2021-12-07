@@ -19,14 +19,18 @@ export default class AccountLogicImpl implements AccountLogic{
     async getUsers(): Promise<String[]> {
         return (await accountDao.getAccounts()).map(a=>a.username);
     }
-    async updatePassword(accountId:Number, password: String): Promise<Account> {
+    async updatePassword(accountId:Number, oldPassword: String, newPassword: String): Promise<Account> {
         const userAccount = await accountDao.getAccountById(accountId);
-        userAccount.password = password;
+        if (userAccount.password != oldPassword)throw new Error("Incorrect Password")
+        userAccount.password = newPassword;
         return await accountDao.updateAccount(userAccount);
     }
-    async deleteAccount(accountId: Number): Promise<Boolean> {
+    async deleteAccount(accountId: Number, password: String): Promise<Boolean> {
+        const userAccount = await accountDao.getAccountById(accountId);
+        if (userAccount.password != password)throw new Error("Incorrect Password")
         return await accountDao.deleteAccount(accountId);
     }
+
     async validateLogin(username:String, password:String):Promise<Number>{
         let accountId:Number = null;
         try{

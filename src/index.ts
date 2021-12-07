@@ -47,7 +47,8 @@ app.patch('/users/login', async (req, res) =>{
 app.patch('/users/updatepassword', async (req, res) => {
     const token:any = req.headers.jwt;
     let accountId:Number = 0;
-    const password:String = req.body.password
+    const oldPassword:String = req.body.oldPassword;
+    const newPassword:String = req.body.newPassword;
     try{
         const result:any = jwt.verify(token, SECRET_KEY);
         accountId = result.accountId;
@@ -56,7 +57,7 @@ app.patch('/users/updatepassword', async (req, res) => {
         res.send(error.message)
     }
     try{
-        const updatedAccount = await accountLogic.updatePassword(accountId, password);
+        const updatedAccount = await accountLogic.updatePassword(accountId, oldPassword, newPassword);
         res.status(200);
         res.send("Password updated successfully")
     }catch(error){
@@ -68,6 +69,7 @@ app.patch('/users/updatepassword', async (req, res) => {
 app.patch('/users/delete', async (req, res) =>{
     const token:any = req.headers.jwt;
     let accountId:Number = 0;
+    const password:String = req.body.password;
     try{
         const result:any = jwt.verify(token, SECRET_KEY);
         accountId = result.accountId;
@@ -76,7 +78,7 @@ app.patch('/users/delete', async (req, res) =>{
         res.send(error.message)
     }
     try{
-        const deleted:Boolean = await accountLogic.deleteAccount(accountId);
+        const deleted:Boolean = await accountLogic.deleteAccount(accountId, password);
         res.status(200)
         res.send(`Account ${accountId} deleted successfully`);
     }catch(error){
@@ -85,7 +87,7 @@ app.patch('/users/delete', async (req, res) =>{
     }
 });
 
-app.patch('/users/token', async (req, res) => {
+app.get('/users/token', async (req, res) => {
     const token:any = req.headers.jwt;
     try{
         const result:any = jwt.verify(token, SECRET_KEY);
