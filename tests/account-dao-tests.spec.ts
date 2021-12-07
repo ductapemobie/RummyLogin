@@ -5,7 +5,6 @@ import { Account } from "../src/entities";
 
 const accountDao:AccountDao = new AccountDaoImpl();
 const testId:String = (Math.random() + 1).toString(36).substring(7);
-//TODO adapt tests to have unique user ids
 
 test("Create Account", async ()=>{
     let testAccount:Account = new Account(0, testId+'create_test_user', 'create_test_pass');

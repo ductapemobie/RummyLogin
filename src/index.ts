@@ -71,10 +71,10 @@ app.patch('/users/delete', async (req, res) =>{
     let accountId:Number = 0;
     const password:String = req.body.password;
     try{
-        const result:any = jwt.verify(token, SECRET_KEY);
+        const result:any = jwt.verify(token, SECRET_KEY);   
         accountId = result.accountId;
     }catch(error){
-        res.status(401);
+        res.status(403);
         res.send(error.message)
     }
     try{
@@ -100,7 +100,7 @@ app.get('/users/token', async (req, res) => {
         res.status(200)
         res.send(retAccount);
     }catch(error){
-        res.status(401);
+        res.status(403);
         res.send(error.message)
     }
 });

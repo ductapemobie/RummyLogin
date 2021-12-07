@@ -13,3 +13,23 @@ export class DbAccount{
         public pass_word:String
     ){}
 }
+
+export class Game{
+    constructor(
+        public gameId:Number,
+        public roomName:String,
+        public password:String,
+        public players:Number,
+        public playerLimit:Number,
+        public inSession:Boolean
+    ){}
+}
+
+//this one needs fixed, not a right now problem
+export class DbGame{
+    constructor(
+        public game_id:Number,
+        public room_name:String,
+        public pass_word:String
+    ){}
+}
