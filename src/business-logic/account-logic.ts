@@ -7,4 +7,7 @@ export default interface AccountLogic{
     updatePassword(accoundId:Number, oldPassword:String, newPassword:String):Promise<Account>;
     deleteAccount(accountId:Number, password:String):Promise<Boolean>;
     validateLogin(username:String, password:String):Promise<Number>;
+    //need to add join game functionality
+    joinGame(accoundId:Number, gameId:Number):Promise<Boolean>;
+    leaveGame(accountId: Number):Promise<Boolean>;
 }
