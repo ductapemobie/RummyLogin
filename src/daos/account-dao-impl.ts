@@ -18,13 +18,13 @@ export default class AccountDaoImpl implements AccountDao{
         if (result.rowCount === 0){
             throw new Error(`Account does not exist`);
         }
-        return result.rows.map((a:DbAccount) => new Account(a.account_id, a.user_name, a.pass_word))[0];
+        return result.rows.map((a:DbAccount) => new Account(a.account_id, a.user_name, a.pass_word, a.g_id))[0];
     }
     
     async getAccounts(): Promise<Account[]> {
         const sql:String = "select * from account"
         const result = await dbClient.query(sql);
-        return result.rows.map((a:DbAccount) => new Account(a.account_id, a.user_name, a.pass_word));
+        return result.rows.map((a:DbAccount) => new Account(a.account_id, a.user_name, a.pass_word, a.g_id));
     }
 
     async updateAccount(account: Account): Promise<Account> {

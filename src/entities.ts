@@ -2,7 +2,8 @@ export class Account{
     constructor(
         public accountId:Number,
         public username:String,
-        public password:String
+        public password:String,
+        public gameId:Number
     ){}
 }
 
@@ -10,7 +11,8 @@ export class DbAccount{
     constructor(
         public account_id:Number,
         public user_name:String,
-        public pass_word:String
+        public pass_word:String,
+        public g_id:Number
     ){}
 }
 
