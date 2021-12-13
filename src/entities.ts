@@ -1,37 +1,19 @@
 export class Account{
     constructor(
-        public accountId:Number,
-        public username:String,
-        public password:String,
-        public gameId:Number
-    ){}
-}
-
-export class DbAccount{
-    constructor(
-        public account_id:Number,
-        public user_name:String,
-        public pass_word:String,
-        public g_id:Number
+        public accountId:number,
+        public username:string,
+        public password:string,
     ){}
 }
 
 export class Game{
     constructor(
-        public gameId:Number,
-        public roomName:String,
-        public password:String,
-        public players:Number,
-        public playerLimit:Number,
-        public inSession:Boolean
-    ){}
-}
-
-//this one needs fixed, not a right now problem
-export class DbGame{
-    constructor(
-        public game_id:Number,
-        public room_name:String,
-        public pass_word:String
+        public gameId:number,
+        public roomName:string,
+        public password:string,
+        public players:number,
+        public playerLimit:number,
+        public inSession:boolean,
+        public gameOwner:number
     ){}
 }

@@ -1,19 +1,30 @@
 import { dbClient } from "../src/connection";
+import AccountDao from "../src/daos/account-dao";
+import AccountDaoImpl from "../src/daos/account-dao-impl";
 import GameDao from "../src/daos/game-dao";
 import GameDaoImpl from "../src/daos/game-dao-impl";
-import { Game } from "../src/entities";
+import { Account, Game } from "../src/entities";
 
 const gameDao:GameDao = new GameDaoImpl();
+const accountDao:AccountDao = new AccountDaoImpl();
 const testId:String = (Math.random() + 1).toString(36).substring(7);
 
+let hostAccount:Account = null;
+let accountId = 0;
+
+beforeAll(async ()=>{
+    hostAccount = new Account(0, testId+'create_test_user', 'password');
+    hostAccount = await accountDao.createAccount(hostAccount);
+    accountId = hostAccount.accountId;
+});
+
 test("Create Game", async ()=>{
-    let testGame:Game = new Game(0, testId+'create_game_test', 'password', 0, 0, false);
+    let testGame:Game = new Game(0, testId+'create_game_test', 'password', 0, 0, false, accountId);
     testGame = await gameDao.createGame(testGame);
     expect(testGame.gameId).not.toBe(0);
 });
-
 test("Get game by id", async ()=> {
-    let testGame:Game = new Game(0, testId+'get_game_test', 'password', 0, 0, false);
+    let testGame:Game = new Game(0, testId+'get_game_test', 'password', 0, 0, false, accountId);
     testGame = await gameDao.createGame(testGame);
     const gameId = testGame.gameId;
     expect(gameId).not.toBe(0);
@@ -22,21 +33,21 @@ test("Get game by id", async ()=> {
 });
 
 test("Get all games", async () =>{
-    const testAccounts:Array<Game> = [];
+    const testGames:Array<Game> = [];
     for (let i = 0; i < 3; i ++){
-        let tempGame:Game = new Game(0, testId+'get_all_test_user' + i, 'password', 0, 0, false);
+        let tempGame:Game = new Game(0, testId+'get_all_test_user' + i, 'password', 0, 0, false, accountId);
         tempGame = await gameDao.createGame(tempGame);
-        testAccounts.push(tempGame);
-        expect(testAccounts[i].gameId).not.toBe(0);
+        testGames.push(tempGame);
+        expect(testGames[i].gameId).not.toBe(0);
     }
     const allGames:Array<Game> = await gameDao.getGames();
     for (let i = 0; i < 3; i ++){
-        expect(testAccounts[i].roomName).toBe(allGames.filter(a=>a.gameId===testAccounts[i].gameId)[0].roomName)
+        expect(testGames[i].roomName).toBe(allGames.filter(a=>a.gameId===testGames[i].gameId)[0].roomName)
     }
 });
 
 test("Update game", async() =>{
-    let testGame:Game = new Game(0, testId+'create_game_test', 'password', 0, 0, false);
+    let testGame:Game = new Game(0, testId+'create_game_test', 'password', 0, 0, false, accountId);
     testGame = await gameDao.createGame(testGame);
     expect(testGame.gameId).not.toBe(0);
     testGame.password = 'updated_password'
@@ -46,7 +57,7 @@ test("Update game", async() =>{
 });
 
 test("Delete game", async() =>{
-    let testGame:Game = new Game(0, testId+'create_game_test', 'password', 0, 0, false);
+    let testGame:Game = new Game(0, testId+'create_game_test', 'password', 0, 0, false, accountId);
     testGame = await gameDao.createGame(testGame);
     const gameId = testGame.gameId;
     expect(gameId).not.toBe(0);
@@ -56,7 +67,6 @@ test("Delete game", async() =>{
         const deletedGame = await gameDao.getGameById(gameId);
         expect(1).toBe(0);
     }catch(error){
-        console.log(error);
         expect(error.message).toBe("Game does not exist");
     }
 })
