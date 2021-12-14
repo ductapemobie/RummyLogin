@@ -1,9 +1,11 @@
 import express, { json } from 'express';
 import cors from 'cors';
-import { Account } from './entities';
+import { Account, RetGame } from './entities';
 import AccountLogic from './business-logic/account-logic';
 import AccountLogicImpl from './business-logic/account-logic-impl';
 import jwt from 'jsonwebtoken'
+import GameLogic from './business-logic/game-logic';
+import GameLogicImpl from './business-logic/game-logic-impl';
 
 const app = express();
 app.use(express.json());
@@ -12,6 +14,7 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.SECRET_KEY || 'placeholder-secret'
 const accountLogic:AccountLogic = new AccountLogicImpl();
+const gameLogic:GameLogic = new GameLogicImpl();
 
 app.post('/users', async (req, res)=>{
     const body  = req.body;
@@ -104,6 +107,11 @@ app.get('/users/token', async (req, res) => {
         res.send(error.message)
     }
 });
+
+app.get('/games', async (req, res)=>{
+    const games:Array<RetGame> = await gameLogic.getAllGames();
+    return games;
+})
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)

@@ -2,7 +2,7 @@ import AccountDao from '../daos/account-dao';
 import AccountDaoImpl from '../daos/account-dao-impl';
 import GameDao from '../daos/game-dao'
 import GameDaoImpl from '../daos/game-dao-impl'
-import {Account, Game} from '../entities'
+import {Account, Game, RetGame} from '../entities'
 import GameLogic from './game-logic'
 
 const gameDao:GameDao = new GameDaoImpl();
@@ -16,8 +16,11 @@ export default class GameLogicImpl implements GameLogic{
     async getGameById(gameId: number): Promise<Game> {
         return await gameDao.getGameById(gameId);
     }
-    async getAllGames(): Promise<Game[]> {
-        return await gameDao.getGames();
+    async getAllGames(): Promise<RetGame[]> {
+        //doing this map just so the password doesn't go to the front end
+        return (await gameDao.getGames()).map(
+            game=>new RetGame(game.gameId, game.roomName, game.players, game.playerLimit, game.inSession, game.gameOwner)
+        );
     }
     async deleteGame(gameId: number, accountId: number): Promise<boolean> {
         const game:Game = await gameDao.getGameById(gameId);

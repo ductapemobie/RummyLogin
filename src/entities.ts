@@ -17,3 +17,15 @@ export class Game{
         public gameOwner:number
     ){}
 }
+
+//class for games that doesn't include password
+export class RetGame{
+    constructor(
+        public gameId:number,
+        public roomName:string,
+        public players:number,
+        public playerLimit:number,
+        public inSession:boolean,
+        public gameOwner:number
+    ){}
+}
