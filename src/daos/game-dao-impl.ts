@@ -46,11 +46,55 @@ export default class GameDaoImpl implements GameDao{
         return true;
     }
     
-    async getAssocPlayers(gameId: number): Promise<number[]> {
-        const sql:string = "select * from account where g_id = $1";
-        const values = [gameId];
-        const result = await dbClient.query(sql, values);
-        const players:Array<number> = result.rows.map(a => a.account_id)
-        return players;
+    async joinGame(gameId: number, accountId: number): Promise<boolean> {
+        const sql:string = "insert into game_account_junction (a_id, g_id) values ($1,$2)"
+        const values = [accountId, gameId];
+        try{
+            const result = await dbClient.query(sql, values);
+        }catch(error){
+            console.log(error);
+            return false;
+        }
+        return true;
     }
+
+    async leaveGame(accountId: number):Promise<boolean>{
+        const sql:string = "delete from game_account_junction where a_id = $1";
+        const values = [accountId];
+        try{
+            const result = await dbClient.query(sql, values);
+            if (result.rowCount === 0)return false;
+        }catch(error){
+            console.log(error);
+            return false;
+        }
+        return true;
+    }
+
+    async getPlayers(gameId: number):Promise<Array<number>>{
+        const sql:string = "select a_id from game_account_junction where g_id = $1"
+        const values = [gameId];
+        let result = null;
+        try{
+            result = await dbClient.query(sql, values);
+        }catch(error){
+            console.log(error)
+            throw new Error(error.message)
+        }
+        return result.rows.map(r=>r.a_id)
+    }
+
+    async findGamesByPlayer(accountId: number):Promise<Array<number>>{
+        const sql:string = "select g_id from game_account_junction where a_id = $1"
+        const values = [accountId];
+        let result = null;
+        try{
+            result = await dbClient.query(sql, values);
+        }catch(error){
+            console.log(error);
+            throw new Error(error.message);
+        }
+        return result.rows.map(r=>r.g_id);
+    }
+
 }

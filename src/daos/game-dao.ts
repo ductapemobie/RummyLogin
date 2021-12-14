@@ -6,5 +6,9 @@ export default interface GameDao{
     getGames():Promise<Array<Game>>;
     updateGame(game:Game):Promise<Game>;
     deleteGame(gameId:number):Promise<boolean>;
-    getAssocPlayers(gameId:number):Promise<Array<number>>;//returns account id's
+    joinGame(gameId:number, accountId:number):Promise<boolean>;
+    leaveGame(accoundId: number):Promise<boolean>;
+    getPlayers(gameId: number):Promise<Array<number>>
+    findGamesByPlayer(accountId: number):Promise<Array<number>>
 }
+
